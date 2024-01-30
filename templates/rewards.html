@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>Rewards</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='bootstrap.min.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='app.css') }}">
+</head>
+
+<body>
+  <div class="card mt-50 mb-50">
+    <div class="card-title mx-auto">
+      Check Your Rewards Card
+    </div>
+    <p>Enter your phone number if you want to use your rewards card.</p>
+    <form method="POST" onsubmit="return validatePhoneNumber()">
+      <div class="form-group">
+        <label for="phone">Phone Number:</label>
+        <input type="tel" class="form-control" id="phone" name="phone" required>
+        <small class="form-text text-muted">Format: 555-555-5555</small>
+      </div>
+      <button type="submit" class="btn d-flex mx-auto">Check Rewards</button>
+
+      <a class="btn d-flex mx-auto" href="payment">I don't have a rewards card.</a>
+    </form>
+  </div>
+  <script src="{{ url_for('static', filename='bootstrap.bundle.min.js') }}"></script>
+</body>
+
+<script>
+  function validatePhoneNumber() {
+    var phoneNumberFormat = /^\(?([0-9]{3})\)?[-. ]?([0-9]{3})[-. ]?([0-9]{4})$/;
+    return document.getElementById("phone").value.match(phoneNumberFormat) != null
+  }
+</script>
+
+
+</html>

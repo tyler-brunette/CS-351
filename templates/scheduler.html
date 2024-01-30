@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Schedule</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='bootstrap.min.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='scheduler.css') }}">
+</head>
+
+
+<div class="modal fade" id="edit-employee-Modal" tabindex="-1" aria-labelledby="edit-employee-ModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <!-- Title of modal -->
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="editModalLabel">Edit Employee</h1>
+            </div>
+
+            <!-- Info -->
+            <div class="modal-body">
+                <form>
+                    <input type="hidden" id="edit-employee-index" name="edit-employee-index">
+                    <label for="edit-employee-name">Name:</label>
+                    <div class="dropdown">
+                        <select class="form-select" style="width:auto" aria-label="Dropdown" id="edit-employee-name">
+                            <option value="DEFAULT"> </option>
+                            {% for employee in allEmployees %}
+                            <option value="{{employee.username}}">{{employee.username}}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <br><br>
+                    <label for="edit-employee-day">Day:</label>
+                    <div class="dropdown">
+                        <select class="form-select" style="width:auto" aria-label="Dropdown" id="edit-employee-day">
+                            <option value="DEFAULT"> </option>
+                            <option value="Monday">Monday</option>
+                            <option value="Tuesday">Tuesday</option>
+                            <option value="Wednesday">Wednesday</option>
+                            <option value="Thursday">Thursday</option>
+                            <option value="Friday">Friday</option>
+                            <option value="Saturday">Saturday</option>
+                            <option value="Sunday">Sunday</option>
+                        </select>
+                    </div>
+                    <br><br>
+                    <label for="edit-employee-start-time">Start Time:</label>
+                    <div class="dropdown">
+                        <select class="form-select" style="width:auto" aria-label="Dropdown"
+                            id="edit-employee-start-time">
+                            <option value="DEFAULT"> </option>
+                            <option value="7am">7am</option>
+                            <option value="8am">8am</option>
+                            <option value="9am">9am</option>
+                            <option value="10am">10am</option>
+                            <option value="11am">11am</option>
+                            <option value="12pm">12pm</option>
+                            <option value="1pm">1pm</option>
+                            <option value="2pm">2pm</option>
+                            <option value="3pm">3pm</option>
+                        </select>
+                    </div>
+                    <br><br>
+                    <label for="edit-employee-end-time">End Time:</label>
+                    <div class="dropdown">
+                        <select class="form-select" style="width:auto" aria-label="Dropdown"
+                            id="edit-employee-end-time">
+                            <option value="DEFAULT"> </option>
+                            <option value="7am">7am</option>
+                            <option value="8am">8am</option>
+                            <option value="9am">9am</option>
+                            <option value="10am">10am</option>
+                            <option value="11am">11am</option>
+                            <option value="12pm">12pm</option>
+                            <option value="1pm">1pm</option>
+                            <option value="2pm">2pm</option>
+                            <option value="3pm">3pm</option>
+                        </select>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Yes/no buttons -->
+            <div class="modal-footer">
+                <div class="container-fluid">
+                    <div class="row justify-content-center">
+                        <div class="col-5">
+                            <button type="button" class="btn d-flex mx-auto" data-bs-dismiss="modal"
+                                onclick="updateEmployee()">Save Changes
+                            </button>
+                        </div>
+                        <div class="col-5">
+                            <button type="button" class="btn d-flex mx-auto" data-bs-dismiss="modal">Cancel</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+
+<title>Employee Schedule Manager</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+    body {
+        font-family: Arial, sans-serif;
+    }
+
+    table {
+        border-collapse: collapse;
+        width: 100%;
+    }
+
+    th,
+    td {
+        text-align: left;
+        padding: 8px;
+        border-bottom: 1px solid #ddd;
+    }
+
+    tr:hover {
+        background-color: #f5f5f5;
+    }
+</style>
+</head>
+
+{% for schedule in schedules%}
+<br onloadeddata="getFromDatabase(schedule)">
+{% endfor %}
+
+<body>
+    <div class="container" style="padding-bottom: 250px">
+        <h1>Employee Schedule Manager</h1>
+        <div class="card mt-50 mb-50">
+            <!-- Add Employee Form -->
+            <div style="display:flex; align-items: center; flex-direction: column;">
+                <h2>Add Employee</h2>
+                <br>
+                <form>
+                    <label for="employee-name">Name:</label>
+                    <div class="dropdown">
+                        <select class="form-select" style="width:auto" aria-label="Dropdown" id="employee-name">
+                            <option value="DEFAULT" selected="selected">Please select an employee</option>
+                            {% for employee in allEmployees %}
+                            <option value="{{employee.username}}">{{employee.username}}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <br>
+                    <label for="employee-day">Day:</label>
+                    <div class="dropdown">
+                        <select class="form-select" style="width:auto" aria-label="Dropdown" id="employee-day">
+                            <option value="DEFAULT">Please select a day</option>
+                            <option value="Monday">Monday</option>
+                            <option value="Tuesday">Tuesday</option>
+                            <option value="Wednesday">Wednesday</option>
+                            <option value="Thursday">Thursday</option>
+                            <option value="Friday">Friday</option>
+                            <option value="Saturday">Saturday</option>
+                            <option value="Sunday">Sunday</option>
+                        </select>
+                    </div>
+                    <br>
+                    <label for="employee-start-time">Start Time:</label>
+                    <div class="dropdown">
+                        <select class="form-select" style="width:auto" aria-label="Dropdown" id="employee-start-time">
+                            <option value="DEFAULT">Please select an start time</option>
+                            <option value="7am">7am</option>
+                            <option value="8am">8am</option>
+                            <option value="9am">9am</option>
+                            <option value="10am">10am</option>
+                            <option value="11am">11am</option>
+                            <option value="12pm">12pm</option>
+                            <option value="1pm">1pm</option>
+                            <option value="2pm">2pm</option>
+                            <option value="3pm">3pm</option>
+                        </select>
+                    </div>
+                    <br>
+                    <label for="employee-end-time">End Time:</label>
+                    <div class="dropdown">
+                        <select class="form-select" style="width:auto" aria-label="Dropdown" id="employee-end-time">
+                            <option value="DEFAULT">Please select an end time</option>
+                            <option value="7am">7am</option>
+                            <option value="8am">8am</option>
+                            <option value="9am">9am</option>
+                            <option value="10am">10am</option>
+                            <option value="11am">11am</option>
+                            <option value="12pm">12pm</option>
+                            <option value="1pm">1pm</option>
+                            <option value="2pm">2pm</option>
+                            <option value="3pm">3pm</option>
+                        </select>
+                    </div>
+                    <br>
+                    <button type="button" class="btn d-flex mx-auto" onclick="addEmployee()">Add Employee</button>
+                    <a class="btn btn-primary" href="/manager" role="button">Back</a>
+                </form>
+            </div>
+        </div>
+
+
+        <!-- Employee List -->
+        <h2>Employee List</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Day</th>
+                    <th>Start Time</th>
+                    <th>End Time</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody id="employee-list">
+                {% for schedule in schedules%}
+                <tr>
+                    <td>{{schedule.username}}</td>
+                    <td>{{schedule.day}}</td>
+                    <td>{{schedule.start}}</td>
+                    <td>{{schedule.end}}</td>
+
+                </tr>
+                {% endfor %}
+                <!-- Employee rows will be added dynamically here -->
+            </tbody>
+        </table>
+
+        <script src="{{ url_for('static', filename='jquery-3.6.4.min.js')}}"></script>
+        <script src="{{ url_for('static', filename='bootstrap.bundle.min.js') }}"></script>
+
+        <script>
+
+            $(document).ready(() => {
+
+                $('#employee-name').val('DEFAULT');
+                $('#employee-day').val('DEFAULT');
+                $('#employee-start-time').val('DEFAULT');
+                $('#employee-end-time').val('DEFAULT');
+                
+            });
+
+            // Array to hold employee data
+            var employees = [];
+
+            // Function to add a new employee to the list
+            function addEmployee() {
+                var name = document.getElementById("employee-name").value;
+                var day = document.getElementById("employee-day").value;
+                var start_time = document.getElementById("employee-start-time").value;
+                var end_time = document.getElementById("employee-end-time").value;
+
+                employees.push({ name: name, day: day, startTime: start_time, endTime: end_time });
+
+                updateEmployeeList();
+            }
+
+            // Function to update the employee list
+            function updateEmployeeList() {
+                var tbody = document.getElementById("employee-list");
+                //tbody.innerHTML = "";
+
+                for (var i = 0; i < employees.length; i++) {
+                    var tr = document.createElement("tr");
+
+                    var tdName = document.createElement("td");
+                    tdName.innerText = employees[i].name;
+                    tr.appendChild(tdName);
+
+                    var tdDay = document.createElement("td");
+                    tdDay.innerText = employees[i].day;
+                    tr.appendChild(tdDay);
+
+                    var tdStartTime = document.createElement("td");
+                    tdStartTime.innerText = employees[i].startTime;
+                    tr.appendChild(tdStartTime);
+
+                    var tdEndTime = document.createElement("td");
+                    tdEndTime.innerText = employees[i].endTime;
+                    tr.appendChild(tdEndTime);
+
+                    var tdAction = document.createElement("td");
+
+                    var editButton = document.createElement("button");
+                    editButton.innerText = "Edit";
+                    editButton.setAttribute("data-index", i);
+                    editButton.onclick = function () {
+                        openEditModal(this.getAttribute("data-index"));
+                    };
+                    tdAction.appendChild(editButton);
+
+                    var deleteButton = document.createElement("button");
+                    deleteButton.innerText = "Delete";
+                    deleteButton.setAttribute("data-index", i);
+                    deleteButton.onclick = function () {
+                        deleteEmployee(this.getAttribute("data-index"));
+                    };
+                    tdAction.appendChild(deleteButton);
+
+                    tr.appendChild(tdAction);
+
+                    tbody.appendChild(tr);
+                }
+            }
+
+            // Function to open the edit employee modal
+            function openEditModal(index) {
+                $("#edit-employee-Modal").modal('show');
+                document.getElementById("edit-employee-index").value = index;
+                document.getElementById("edit-employee-name").value = employees[index].name;
+                document.getElementById("edit-employee-day").value = employees[index].day;
+                document.getElementById("edit-employee-start-time").value = employees[index].startTime;
+                document.getElementById("edit-employee-end-time").value = employees[index].endTime;
+                document.getElementById("edit-employee-modal").style.display = "block";
+            }
+
+            // Function to update an employee's information
+            function updateEmployee() {
+                var index = document.getElementById("edit-employee-index").value;
+                var name = document.getElementById("edit-employee-name").value;
+                var day = document.getElementById("edit-employee-day").value;
+                var start_time = document.getElementById("edit-employee-start-time").value;
+                var end_time = document.getElementById("edit-employee-end-time").value;
+
+
+                employees[index].name = name;
+                employees[index].day = day;
+                employees[index].startTime = start_time;
+                employees[index].endTime = end_time;
+
+                updateEmployeeList();
+
+                closeModal();
+            }
+
+            // Function to close the edit employee modal
+            function closeModal() {
+                document.getElementById("edit-employee-modal").style.display = "none";
+            }
+
+            // Function to delete an employee from the list
+            function deleteEmployee(index) {
+                employees.splice(index, 1);
+                updateEmployeeList();
+            }
+        </script>
+    </div>
+</body>
+
+</html>

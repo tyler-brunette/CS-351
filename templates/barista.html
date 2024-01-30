@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Barista</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='bootstrap.min.css') }}">
+</head>
+
+
+<div class="container">
+    <h1>Barista Order</h1>
+    <a class="btn btn-primary" href="/logout" role="button">Log Out</a>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Items</th>
+                <th>Order Number</th>
+                <th>Time</th>
+                <th>Status</th>
+            </tr>
+        </thead>
+        <tbody id="transactionTable">
+            {% for transaction in allTransactions %}
+            <tr id="{{transaction.orderNum}}"> 
+                <td>Regular Coffee: {{transaction.regular}}, Deluxe Coffee: {{transaction.deluxe}}, Donuts:
+                    {{transaction.donut}}</td>
+                <td>{{transaction.orderNum}}</td>
+                <td>{{transaction.time}}</td>
+                <td><a class="btn btn-primary update-button" data-order-num="{{transaction.orderNum}}">Complete
+                        Order</a></td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+
+
+<script src="{{ url_for('static', filename='bootstrap.bundle.min.js') }}"></script>
+<script src="{{ url_for('static', filename='jquery-3.6.4.min.js')}}"></script>
+<script src="{{url_for('static', filename='socketio/socket.io.js')}}"></script>
+
+<script>
+    $(document).ready(function () {
+        $('.update-button').click(function () {
+            var orderNumber = $(this).data('order-num');
+            console.log('Clicked button for order number:', orderNumber);
+            $.ajax({
+                url: '/barista/' + orderNumber,
+                type: 'POST',
+                success: function (response) {
+                    console.log(response);
+                },
+                error: function (error) {
+                    console.log(error);
+                }
+            });
+
+            document.getElementById(orderNumber).remove()
+
+        });
+    });
+
+
+    ///////////////////////////////
+
+    // Initialize socket.io
+    var socket = io()
+
+    // Connect to the server this page was served from
+    socket.connect()
+
+    socket.on('newOrder', (order) => {
+
+        const date = new Date();
+
+        let day = date.getDate();
+
+        if (day < 10) {
+            day = `0${day}`
+        }
+
+        let month = date.getMonth() + 1;
+
+        if (month < 10) {
+            month = `0${month}`
+        }
+
+        let year = date.getFullYear();
+
+        // This arrangement can be altered based on how we want the date's format to appear.
+        let currentDate = `${year}-${month}-${day}`;
+
+        var newLiveOrder = document.createElement("tr")
+
+        newLiveOrder.innerHTML =
+            `
+        <td>Regular Coffee: ${order.coffeeCount},
+            Deluxe Coffee: ${order.deluxeCoffeeCount},
+            Donuts: ${order.donutCount}</td>
+        <td>${order.orderNum}</td>
+        <td>${currentDate}</td>
+        <td>
+            <a class="btn btn-primary update-button"
+            data-order-num="${order.orderNum}">Complete Order</a>
+        </td>
+        `
+
+        document.getElementById("transactionTable").appendChild(newLiveOrder)
+    })
+
+
+
+</script>
+
+</html>

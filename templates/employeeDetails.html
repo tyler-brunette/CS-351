@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Employee Details</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='bootstrap.min.css') }}">
+</head>
+
+
+<div class="container">
+    <h1>Employee Details</h1>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Employee Name</th>
+                <th>Role</th>
+                <th>Log-In Time</th>
+                <th>Log-Out Time</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for employee in allEmployees %}
+            <tr>
+                <td>{{employee.username}}</td>
+                <td>{{employee.title}}</td>
+                <td>{{employee.clock_in}}</td>
+                <td>{{employee.clock_out}}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    <a class="btn btn-primary" href="/manager" role="button">Back</a>
+</div>
+
+
+
+<script src="{{ url_for('static', filename='bootstrap.bundle.min.js') }}"></script>
+
+</html>

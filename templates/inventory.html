@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>Inventory Screen</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='bootstrap.min.css') }}">
+</head>
+
+<body>
+  <div class="container">
+    <h1>Inventory</h1>
+    <table class="table">
+      <thead>
+        <tr>
+          <th>Item</th>
+          <th>Quantity</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for inv in inventory %}
+        <tr>
+          <td>Cups (count)</td>
+          <td>{{inv.cups}}</td>
+        </tr>
+        <tr>
+          <td>Coffee Grounds (Tbsp.)</td>
+          <td>{{inv.coffee_grounds}}</td>
+        </tr>
+        <tr>
+          <td>Milk (gallons)</td>
+          <td>{{inv.milk}}</td>
+        </tr>
+        <tr>
+          <td>Donuts (count)</td>
+          <td>{{inv.donuts}}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    <a class="btn btn-primary" href="/manager" role="button">Back</a>
+  </div>
+</body>
+
+</html>

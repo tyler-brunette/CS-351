@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<title>Cashier</title>
+	<link rel="stylesheet" href="{{ url_for('static', filename='bootstrap.min.css') }}">
+	<link rel="stylesheet" href="{{ url_for('static', filename='app.css') }}">
+</head>
+
+<body>
+	<div class="card mt-50 mb-50">
+		<div class="card-title mx-auto">
+			Welcome, Cashier
+		</div>
+		<form method="POST" onsubmit="return isNotEmpty(this)">
+
+			<div class="form-group">
+				<label for="coffee">Coffee: ($1)</label>
+				<input type="number" class="form-control" id="coffee" name="coffee" min="0" max="100" value="0">
+			</div>
+			<div class="form-group">
+				<label for="deluxe_coffee">Deluxe Coffee: ($2)</label>
+				<input type="number" class="form-control" id="deluxe_coffee" name="deluxe_coffee" min="0" max="100"
+					value="0">
+			</div>
+			<div class="form-group">
+				<label for="donuts">Donuts: ($2.50)</label>
+				<input type="number" class="form-control" id="donuts" name="donuts" min="0" max="100" value="0">
+
+			</div>
+			<button class="btn d-flex mx-auto">Submit Order</button>
+			<a type="button" class="btn d-flex mx-auto" href="/logout" role="button">Log Out</a>
+
+		</form>
+	</div>
+	<script src="{{ url_for('static', filename='bootstrap.min.js') }}"></script>
+	<script>
+		function isNotEmpty() {
+			var coffee = document.getElementById("coffee").value
+			var deluxe_coffee = document.getElementById("deluxe_coffee").value
+			var donuts = document.getElementById("donuts").value
+
+			return !(coffee == 0 && deluxe_coffee == 0 && donuts == 0)
+		}
+	</script>
+</body>
+
+</html>

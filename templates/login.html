@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+    <title>Coffee Shop</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='bootstrap.min.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='app.css') }}">
+</head>
+
+<body>
+    <div class="card mt-50 mb-50">
+
+        <div class="card-title mx-auto">
+            The Daily Grind Login
+        </div>
+
+        <form method="POST" role="form">
+
+            <div class="form-group">
+                <label for="username">Username</label>
+                <input type="text" class="form-control" id="usernameInput" name="username" placeholder="Username">
+            </div>
+
+            <div class="form-group">
+                <label for="passwordInput">Password</label>
+                <input type="password" class="form-control" id="passwordInput" name="password" placeholder="Password">
+            </div>
+            <div style="border: 1px solid darkred; background: salmon; border-radius: 5px; justify-content: center; display: none"
+                id="errorMessageContainer">
+                <h4 style="margin: 8px" id="errorMessage">{{error}}</h4>
+            </div>
+            <button type="submit" class="btn d-flex mx-auto">Submit</button>
+
+        </form>
+
+        <div style="margin: auto; padding-top: 10px;">
+            <img src="{{ url_for('static', filename='Logo.png') }}" />
+        </div>
+    </div>
+
+</body>
+
+<script src="{{ url_for('static', filename='jquery-3.6.4.min.js')}}"></script>
+
+<script>
+    $(document).ready(() => {
+        var errorMessage = document.getElementById("errorMessage")
+        if (errorMessage.innerText != "") {
+            var container = document.getElementById("errorMessageContainer")
+            container.style.display = ""
+        }
+    })
+</script>
+
+
+</html>

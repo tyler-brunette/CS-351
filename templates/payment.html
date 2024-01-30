@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html>
+<!-- This page uses styles and content based on the BBBootstrap credit card payment form template -->
+<!-- https://bbbootstrap.com/snippets/bootstrap-credit-card-payment-form-template-66923845 -->
+
+<head>
+
+    <title>Payment</title>
+
+    <!-- Bootstrap styles -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='bootstrap.min.css') }}">
+
+    <!-- Page-specific styles -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='payment.css') }}">
+
+</head>
+
+
+<body>
+    <!-- Use rewards prompt -->
+    <div class="modal fade" id="rewardModal" tabindex="-1" aria-labelledby="rewardModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+
+                <!-- Title of modal -->
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="rewardModalLabel">Do you want to use your rewards?</h1>
+                </div>
+
+                <!-- Info -->
+                <div class="modal-body">
+                    It's your 5th purchase! This means you qualify for a free coffee!
+                </div>
+
+                <!-- Yes/no buttons -->
+                <div class="modal-footer">
+                    <div class="container-fluid">
+                        <div class="row justify-content-center">
+                            <div class="col-5">
+                                <button type="button" class="btn" data-bs-dismiss="modal"
+                                    onclick="acceptedReward()">Yes</button>
+                            </div>
+                            <div class="col-5">
+                                <button type="button" class="btn" data-bs-dismiss="modal">No</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <div class="card mt-50 mb-50">
+        <!-- Card title -->
+        <div class="card-title mx-auto">
+            Payment
+        </div>
+        <div class="card-title mx-auto" id="amountDueTitle">
+            Total Due: $0.00
+        </div>
+
+        <!-- Cash/card tabs -->
+        <ul class="nav nav-tabs" id="myTab" role="tablist">
+            <li class="nav-item" role="presentation">
+                <button class="nav-link active" id="card-tab" data-bs-toggle="tab" data-bs-target="#card-tab-pane"
+                    type="button" role="tab" aria-controls="card-tab-pane" aria-selected="true">Card</button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="cash-tab" data-bs-toggle="tab" data-bs-target="#cash-tab-pane"
+                    type="button" role="tab" aria-controls="cash-tab-pane" aria-selected="false">Cash</button>
+            </li>
+
+        </ul>
+
+        <div class="tab-content">
+            <!-- Card tab -->
+            <div class="tab-pane fade show active" id="card-tab-pane" role="tabpanel" aria-labelledby="card-tab"
+                tabindex="0">
+
+                <!-- Card information form -->
+                <form method="POST">
+                    <!-- Row for the card holder name -->
+                    <div class="row-1">
+                        <div class="row row-2">
+                            <span id="card-inner">Card holder name</span>
+                        </div>
+                        <div class="row row-2">
+                            <input type="text" placeholder="Jack E" required>
+                        </div>
+                    </div>
+
+                    <!-- Row for the card number -->
+                    <div class="row-1">
+                        <div class="row row-2">
+                            <span id="card-inner">Card number</span>
+                        </div>
+                        <div class="row row-2">
+                            <input type="text" placeholder="1234-1234-1234-1234" required>
+                        </div>
+                    </div>
+
+                    <!-- Row for the expiration date and the CVV -->
+                    <div class="row">
+
+                        <!-- Expiration date -->
+                        <div class="col-5">
+                            <div class="row row-2">
+                                <span id="card-inner">Expiration Date</span>
+                            </div>
+                            <div class="row row-2">
+                                <input type="text" placeholder="3/23" required>
+                            </div>
+                        </div>
+
+                        <!-- CVV code -->
+                        <div class="col-5">
+                            <div class="row row-2">
+                                <span id="card-inner">CVV</span>
+                            </div>
+                            <div class="row row-2">
+                                <input type="text" placeholder="024" required>
+                            </div>
+                        </div>
+
+                        <!-- The pay button -->
+                        <button class="btn d-flex mx-auto" onclick="sendToBarista()"><b>Pay</b></button>
+                </form>
+
+            </div>
+        </div>
+
+        <!-- Cash tab -->
+        <div class="tab-pane fade" id="cash-tab-pane" role="tabpanel" aria-labelledby="cash-tab" tabindex="1">
+
+            <!-- Cash amount input form -->
+            <form method="POST" onsubmit="return validChange()">
+
+                <!-- Cash paid amount -->
+                <div class="row-1">
+                    <div class="row row-2">
+                        <span id="card-inner">Cash Paid</span>
+                    </div>
+                    <div class="row row-2">
+                        <input type="text" placeholder="0" id="cashInput" required onchange="calculateChange()">
+                    </div>
+
+
+                </div>
+
+
+                <div class="row-1">
+                    <div class="row row-2">
+                        <span id="card-inner">Change Due</span>
+                    </div>
+                    <div class="row row-2">
+                        <input type="text" placeholder="$0.00" id="changeOutput" disabled>
+                    </div>
+                </div>
+
+                <!-- Finish transaction button -->
+                <button class="btn d-flex mx-auto" onclick="sendToBarista()"><b>Finished</b></button>
+
+            </form>
+        </div>
+    </div>
+
+    <!-- Bootstrap javascript -->
+    <script src="{{ url_for('static', filename='bootstrap.bundle.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='jquery-3.6.4.min.js')}}"></script>
+    <script src="{{url_for('static', filename='socketio/socket.io.js')}}"></script>
+
+    <!-- Page-specific javascript -->
+    <script>
+
+        let formatting_options = {
+            style: 'currency',
+            currency: 'USD',
+            minimumFractionDigits: 2,
+        }
+
+        // Initialize socket.io
+        var socket = io()
+
+        // Connect to the server this page was served from
+        socket.connect()
+
+        // Get the cookie representing whether or not the customer is eligible for a discount
+        var rewardDiscount = document.cookie
+            .split("; ")
+            .find((row) => row.startsWith("RewardDiscount="))
+            ?.split("=")[1];
+
+        // Convert to boolean
+        rewardDiscount = rewardDiscount != null && rewardDiscount.toLowerCase() === "true"
+
+        var order = document.cookie
+            .split("; ")
+            .find((row) => row.startsWith("Order="))
+            ?.split("=")[1]
+
+        // Replace escaped commas in cookie
+        order = order.replace(/\\054/g, ',')
+
+        // Parse order into object
+        order = JSON.parse(order)
+        order = JSON.parse(order)
+
+        // When the document is finished loading
+        $(document).ready(() => {
+
+            // If the customer is eligible, show the reward modal
+            if (rewardDiscount) {
+                $("#rewardModal").modal('show');
+            }
+
+            changeAmountDue(order.cost)
+        });
+
+        function acceptedReward() {
+
+            var newOrder = order
+
+            newOrder.cost = newOrder.cost - 1.00
+
+            document.cookie.replace(order, newOrder)
+
+            changeAmountDue(newOrder.cost)
+        }
+
+        function calculateChange() {
+            var changeAmount = document.getElementById("cashInput").value
+
+            changeOutput.value = (changeAmount - order.cost).toLocaleString("en-US", formatting_options)
+        }
+
+        function changeAmountDue() {
+            document.getElementById("amountDueTitle").innerHTML = "Amount Due: " + order.cost.toLocaleString("en-US", formatting_options)
+        }
+
+        function sendToBarista() {
+            socket.emit("newOrder", order)
+        }
+
+        function validChange() {
+            var changeAmount = document.getElementById("cashInput").value
+            return order.cost - changeAmount <= 0
+        }
+    </script>
+</body>
+
+</html>

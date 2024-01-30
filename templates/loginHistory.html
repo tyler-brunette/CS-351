@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Log History</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='bootstrap.min.css') }}">
+</head>
+
+
+<div class="container">
+    <h1>Transaction History</h1>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Order Num
+                <th>
+                <th>Items</th>
+                <th>Cost</th>
+                <th>Date</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for transaction in allTransactions %}
+            <tr>
+                <td>transaction.num</td>
+                <td>Regular Coffee: {{transaction.regular}}, Deluxe Coffee: {{transaction.deluxe}}, Donuts:
+                    {{transaction.donut}}</td>
+                <td>{{transaction.cost}}</td>
+                <td>{{transaction.time}}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    <a class="btn btn-primary" href="/manager" role="button">Back</a>
+</div>
+
+
+
+<script src="{{ url_for('static', filename='bootstrap.bundle.min.js') }}"></script>
+
+</html>
