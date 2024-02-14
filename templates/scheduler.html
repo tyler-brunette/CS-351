@@ -14,7 +14,7 @@
         <div class="modal-content">
             <!-- Title of modal -->
             <div class="modal-header">
-                <h1 class="modal-title fs-5" id="editModalLabel">Edit Employee</h1>
+                <h1 class="modal-title fs-5" id="editModalLabel">Edit Shift</h1>
             </div>
 
             <!-- Info -->
@@ -28,20 +28,6 @@
                             {% for employee in allEmployees %}
                             <option value="{{employee.username}}">{{employee.username}}</option>
                             {% endfor %}
-                        </select>
-                    </div>
-                    <br><br>
-                    <label for="edit-employee-day">Day:</label>
-                    <div class="dropdown">
-                        <select class="form-select" style="width:auto" aria-label="Dropdown" id="edit-employee-day">
-                            <option value="DEFAULT"> </option>
-                            <option value="Monday">Monday</option>
-                            <option value="Tuesday">Tuesday</option>
-                            <option value="Wednesday">Wednesday</option>
-                            <option value="Thursday">Thursday</option>
-                            <option value="Friday">Friday</option>
-                            <option value="Saturday">Saturday</option>
-                            <option value="Sunday">Sunday</option>
                         </select>
                     </div>
                     <br><br>
@@ -135,10 +121,35 @@
 <body>
     <div class="container" style="padding-bottom: 250px">
         <h1>Employee Schedule Manager</h1>
+        <br>
+        <table class="scheduler-table">
+            <tr>
+              <th>Employee</th>
+              <th>Monday</th>
+              <th>Tuesday</th>
+              <th>Wednesday</th>
+              <th>Thursday</th>
+              <th>Friday</th>
+              <th>Saturday</th>
+              <th>Sunday</th>
+            </tr>
+            {% for employee in allEmployees %}
+                <tr>
+                    <td>{{employee.username}}</td>
+                    <td><button type="button" class="btn d-flex mx-auto" onclick="openEditModal(0)">+</button></td>
+                    <td><button type="button" class="btn d-flex mx-auto" onclick="openEditModal(0)">+</button></td>
+                    <td><button type="button" class="btn d-flex mx-auto" onclick="openEditModal(0)">+</button></td>
+                    <td><button type="button" class="btn d-flex mx-auto" onclick="openEditModal(0)">+</button></td>
+                    <td><button type="button" class="btn d-flex mx-auto" onclick="openEditModal(0)">+</button></td>
+                    <td><button type="button" class="btn d-flex mx-auto" onclick="openEditModal(0)">+</button></td>
+                    <td><button type="button" class="btn d-flex mx-auto" onclick="openEditModal(0)">+</button></td>
+                </tr>
+            {% endfor %}
+        </table>
         <div class="card mt-50 mb-50">
             <!-- Add Employee Form -->
             <div style="display:flex; align-items: center; flex-direction: column;">
-                <h2>Add Employee</h2>
+                <h2>Edit Schedule</h2>
                 <br>
                 <form>
                     <label for="employee-name">Name:</label>

@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Employee Shift Scheduler</title>
+<style>
+  body {
+    font-family: Arial, sans-serif;
+  }
+  .scheduler-table {
+    width: 100%;
+    border-collapse: collapse;
+    text-align: center;
+  }
+  .scheduler-table th, .scheduler-table td {
+    border: 1px solid #ddd;
+    padding: 8px;
+  }
+  .scheduler-table th {
+    background-color: #4c7faf;
+    color: white;
+  }
+  .shift-cell {
+    cursor: pointer;
+  }
+</style>
+</head>
+<body>
+
+<h2>Employee Shift Scheduler</h2>
+<table class="scheduler-table">
+  <tr>
+    <th>Employee</th>
+    <th>Monday</th>
+    <th>Tuesday</th>
+    <th>Wednesday</th>
+    <th>Thursday</th>
+    <th>Friday</th>
+    <th>Saturday</th>
+    <th>Sunday</th>
+  </tr>
+  <tr>
+    <td>John Doe</td>
+    <td><button type="button" class="btn d-flex mx-auto">Add Employee</button>
+        <br><br>End: <input type="time" id="appt" name="appt" min="09:00" max="18:00" required />
+    </td>
+    <td class="shift-cell">9:00-17:00</td>
+    <td class="shift-cell">-</td>
+    <td class="shift-cell">9:00-17:00</td>
+    <td class="shift-cell">9:00-17:00</td>
+    <td class="shift-cell">-</td>
+    <td class="shift-cell">-</td>
+  </tr>
+  <tr>
+    <td>Jane Smith</td>
+    <td class="shift-cell">10:00-18:00</td>
+    <td class="shift-cell">10:00-18:00</td>
+    <td class="shift-cell">10:00-18:00</td>
+    <td class="shift-cell">-</td>
+    <td class="shift-cell">10:00-18:00</td>
+    <td class="shift-cell">-</td>
+    <td class="shift-cell">-</td>
+  </tr>
+  <!-- Additional rows for more employees -->
+</table>
+
+<script>
+    // Function to edit shift times on cell click
+    function editShift(cell) {
+      // Get current shift value
+      var currentShift = cell.innerHTML;
+      // Prompt user to enter new shift time
+      var newShift = prompt("Please enter the new shift time:", currentShift);
+      // If a new shift time was entered, update the cell
+      if (newShift !== null && newShift.trim() !== "") {
+        cell.innerHTML = newShift;
+      }
+    }
+    
+    // Add click event listeners to shift cells
+    document.addEventListener("DOMContentLoaded", function() {
+      var shiftCells = document.querySelectorAll(".shift-cell");
+      shiftCells.forEach(function(cell) {
+        cell.addEventListener("click", function() {
+          editShift(cell);
+        });
+      });
+    });
+</script>
+
+</body>
+</html>
