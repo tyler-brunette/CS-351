@@ -1,4 +1,5 @@
 # Imports for the backend to function properly
+from datetime import datetime as dt  # Rename datetime to dt
 from gevent import monkey
 
 # Needed for Flask's implementation for Socket.IO
@@ -51,6 +52,10 @@ def login():
             elif userType == "Staff":
                 response = make_response(redirect("/scheduler"))
 
+            if response == None:
+                errorMsg = "ERROR: Invalid login! Please try again."
+                return render_template("login.html", error=errorMsg)
+
             # Set the username cookie for the user for logging in and out
             response.set_cookie("Role", userType)
 
@@ -96,21 +101,65 @@ def employeeDashboard():
     # Display the employee details page and pass along employee details
     return render_template("employeeDetails.html", allEmployees=allEmployees)
 
+@app.route("/addEmployee", methods=["GET", "POST"])
+def addEmployee():
+    if request.method == "POST":
+        name = request.form.get('name')
+        password = request.form.get('pass')
+        role = request.form.get('role') 
+        
+        DB.createEmployee(name, password, role)
+    return redirect("/employeeDashboard")
+
+@app.route("/removeEmployee", methods=["GET", "POST"])
+def removeEmployee():
+    if request.method == "POST":
+        name = request.form.get('name')
+        
+        DB.removeEmployee(name)
+    return redirect("/employeeDashboard")
+
 
 # Page for viewing employee schedules
 @app.route("/scheduler", methods=["GET", "POST"])
 def schedulerDashboard():
     # Get details of all employees from the database to be displayed
     allEmployees = DB.printEmployees()
-
-    # Get details of all schedules from the database to be displayed
     schedules = DB.printScheduler()
+    for shift in schedules:
+        start_time = dt.strptime(shift['startTime'], '%H:%M').strftime('%I:%M %p')
+        end_time = dt.strptime(shift['endTime'], '%H:%M').strftime('%I:%M %p')
+        shift['startTime'] = start_time
+        shift['endTime'] = end_time
 
     # There is no POST request for this endpoint
     # Display the employee schedule page and pass along employee and schedule details
     return render_template(
         "scheduler.html", allEmployees=allEmployees, schedules=schedules
     )
+
+@app.route("/updateShift", methods=["GET", "POST"])
+def updateShift():
+    if request.method == "POST":
+        username = request.form.get('username')
+        day = request.form.get('day')
+        start_time = request.form.get('startTime')
+        end_time = request.form.get('endTime') 
+        
+        DB.updateShift(username, day, start_time, end_time)
+    
+    return redirect("/scheduler")
+
+
+@app.route("/deleteShift", methods=["GET", "POST"])
+def deleteShift():
+    if request.method == "POST":
+        username = request.form.get('username')
+        day = request.form.get('day')
+        
+        DB.deleteShift(username, day)
+    
+    return redirect("/scheduler")
 
 
 # Start the Flask web server using sockets

@@ -4,8 +4,134 @@
 <head>
     <title>Employee Details</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='bootstrap.min.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='employeeDetails.css') }}">
 </head>
 
+<div class="modal fade" id="add-employee-Modal" tabindex="-1" aria-labelledby="add-employee-ModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <!-- Title of modal -->
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="editModalLabel">Add Employee</h1>
+            </div>
+
+            <!-- Info -->
+            <div class="modal-body">
+                <form>
+
+                    <div class="form-group">
+                        <label for="add-employee-name">Employee Username:</label>
+                        <input type="text" class="form-control" id="add-employee-name" name="username" placeholder="Username">
+                    </div>
+                    <br><br>
+                    <div class="form-group">
+                        <label for="add-employee-pass">Employee Password:</label>
+                        <input type="password" class="form-control" id="add-employee-pass" name="password" placeholder="Password">
+                    </div>
+                    <br><br>
+                    <label for="add-employee-role">Employee Role:</label>
+                    <div class="dropdown">
+                        <select class="form-select" style="width:auto" aria-label="Dropdown"
+                            id="add-employee-role">
+                            <option value="DEFAULT"> </option>
+                            <option value="Manager">Manager</option>
+                            <option value="Staff">Staff</option>
+                        </select>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Yes/no buttons -->
+            <div class="modal-footer">
+                <div class="container-fluid">
+                    <div class="row justify-content-center">
+                        <div class="col-5">
+                            <button type="button" class="btn d-flex mx-auto" data-bs-dismiss="modal"
+                                onclick="addEmployee()">Add Employee
+                            </button>
+                        </div>
+                        <div class="col-5">
+                            <button type="button" class="btn d-flex mx-auto" data-bs-dismiss="modal">Cancel</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="remove-employee-Modal" tabindex="-1" aria-labelledby="remove-employee-ModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <!-- Title of modal -->
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="editModalLabel">Remove Employee</h1>
+            </div>
+
+            <!-- Info -->
+            <div class="modal-body">
+                <form>
+
+                    <div class="dropdown">
+                        <select class="form-select" style="width:auto" aria-label="Dropdown"
+                            id="remove-employee-role">
+                            <option value="DEFAULT"> </option>
+                            {% for employee in allEmployees %}
+                                <option value="{{employee.username}}">{{employee.username}}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Yes/no buttons -->
+            <div class="modal-footer">
+                <div class="container-fluid">
+                    <div class="row justify-content-center">
+                        <div class="col-5">
+                            <button type="button" class="btn d-flex mx-auto" data-bs-dismiss="modal"
+                                onclick="removeEmployee()">Remove Employee
+                            </button>
+                        </div>
+                        <div class="col-5">
+                            <button type="button" class="btn d-flex mx-auto" data-bs-dismiss="modal">Cancel</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<title>Employee Details</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+    body {
+        font-family: Arial, sans-serif;
+    }
+
+    table {
+        border-collapse: collapse;
+        width: 100%;
+    }
+
+    th,
+    td {
+        text-align: center;
+        padding: 8px;
+        border-bottom: 1px solid #ddd;
+    }
+
+    tr:hover {
+        background-color: #f5f5f5;
+    }
+</style>
+</head>
 
 <div class="container">
     <h1>Employee Details</h1>
@@ -14,8 +140,6 @@
             <tr>
                 <th>Employee Name</th>
                 <th>Role</th>
-                <th>Log-In Time</th>
-                <th>Log-Out Time</th>
             </tr>
         </thead>
         <tbody>
@@ -23,17 +147,117 @@
             <tr>
                 <td>{{employee.username}}</td>
                 <td>{{employee.title}}</td>
-                <td>{{employee.clock_in}}</td>
-                <td>{{employee.clock_out}}</td>
             </tr>
             {% endfor %}
         </tbody>
     </table>
     <a class="btn btn-primary" href="/manager" role="button">Back</a>
+    <a class="btn btn-primary" onclick="openAddModal()" role="button">Add Employee</a>
+    <a class="btn btn-primary" onclick="openRemoveModal()" role="button">Remove Employee</a>
 </div>
 
 
+<body>
+    <script src="{{ url_for('static', filename='jquery-3.6.4.min.js')}}"></script>
+        <script src="{{ url_for('static', filename='bootstrap.bundle.min.js') }}"></script>
 
-<script src="{{ url_for('static', filename='bootstrap.bundle.min.js') }}"></script>
+    <script>
+
+        var username = "";
+        var day = "";
+
+        $(addEmployeeDocument).ready(() => {
+
+            $('#employee-name').val('DEFAULT');
+            $('#employee-pass').val('DEFAULT');
+            $('#employee-role').val('DEFAULT');
+            
+        });
+
+        $(removeEmployeeDocument).ready(() => {
+
+            $('#employee-name').val('DEFAULT');
+
+        });
+
+
+        // Function to open the edit employee modal
+        function openAddModal() {
+            $("#add-employee-Modal").modal('show');
+            addEmployeeDocument.getElementById("add-employee-name").value = "";
+            addEmployeeDocument.getElementById("add-employee-pass").value = "";
+            addEmployeeDocument.getElementById("add-employee-role").value = "";
+            addEmployeeDocument.getElementById("add-employee-modal").style.display = "block";
+        }
+
+        function addEmployee() {
+            var name = addEmployeeDocument.getElementById("add-employee-name").value;
+            var pass = addEmployeeDocument.getElementById("add-employee-pass").value;
+            var role = addEmployeeDocument.getElementById("add-employee-role").value;
+
+
+            $.ajax({
+                url: '/addEmployee',
+                type: 'POST',
+                data: {
+                    name: name,
+                    pass: pass,
+                    role: role,
+                },
+                success: function (response) {
+                    console.log('Successfully added employee.');
+                    // Optionally, you can close the modal or perform other actions on success
+                },
+                error: function (error) {
+                    console.error('Error adding employee:', error);
+                    // Handle errors if needed
+                }
+            });
+
+            closeModal();
+
+        }
+        // Function to close the edit employee modal
+        function closeModal() {
+            addEmployeeDocument.getElementById("add-employee-modal").style.display = "none";
+        }
+
+        // Function to open the edit employee modal
+        function openRemoveModal() {
+            $("#remove-employee-Modal").modal('show');
+            removeEmployeeDocument.getElementById("remove-employee-name").value = 'DEFAULT';
+            removeEmployeeDocument.getElementById("remove-employee-modal").style.display = "block";
+        }
+
+        function removeEmployee() {
+            var name = removeEmployeeDocument.getElementById("remove-employee-name").value;
+
+
+            $.ajax({
+                url: '/removeEmployee',
+                type: 'POST',
+                data: {
+                    name: name,
+                },
+                success: function (response) {
+                    console.log('Successfully removed employee.');
+                    // Optionally, you can close the modal or perform other actions on success
+                },
+                error: function (error) {
+                    console.error('Error removing employee:', error);
+                    // Handle errors if needed
+                }
+            });
+
+            closeRemoveModal();
+
+        }
+        // Function to close the edit employee modal
+        function closeRemoveModal() {
+            removeEmployeeDocument.getElementById("remove-employee-modal").style.display = "none";
+        }
+
+    </script>
+</body>
 
 </html>

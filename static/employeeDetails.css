@@ -164,6 +164,11 @@ body {
     color: white;
     font-size: 30px;
 }
+.container{
+    margin: auto;
+    width: 800px;
+    padding: 3rem 3.5rem;
+}
 .mt-50 {
     margin-top: 50px
 }

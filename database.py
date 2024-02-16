@@ -39,6 +39,14 @@ def createEmployee(name, password, title):
     }
     employee_collection.insert_one(post)
 
+def removeEmployee(name):
+    x = 0
+    for employee in employee_collection.find({"username": name}):
+        x += 1
+        break
+    if x > 0:
+        employee_collection.delete_one({"username": name})
+
 
 # Prints all employees in the database
 def printEmployees():
@@ -48,3 +56,26 @@ def printEmployees():
 # Prints all employee schedules in the scheduler database
 def printScheduler():
     return list(scheduler_collection.find())
+
+def updateShift(name, day, start_time, end_time):
+    x = 0
+    for shift in scheduler_collection.find({"username": name, "day": day}):
+        x += 1
+        break
+    if x > 0:
+        scheduler_collection.delete_one({"username": name, "day": day})
+    post = {
+        "username": name,
+        "day": day,
+        "startTime": start_time,
+        "endTime": end_time
+    }
+    scheduler_collection.insert_one(post)
+
+def deleteShift(name, day):
+    x = 0
+    for shift in scheduler_collection.find({"username": name, "day": day}):
+        x += 1
+        break
+    if x > 0:
+        scheduler_collection.delete_one({"username": name, "day": day})
