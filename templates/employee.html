@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Employee</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='bootstrap.min.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='employee.css') }}">
+</head>
+
+<body>
+    <div class="card mt-50 mb-50">
+        <div class="card-title mx-auto">
+            Welcome,
+        </div>
+        <a type="button" class="btn d-flex mx-auto" href="/time_table" role="button">Employee Scheduler</a>
+        <a type="button" class="btn d-flex mx-auto" href="/logout" role="button">Log Out</a>
+    </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='bootstrap.bundle.min.js') }}"></script>
+</body>
+
+</html>
